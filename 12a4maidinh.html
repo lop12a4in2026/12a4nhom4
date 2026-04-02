@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Modern Graphic UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #1a1a1a, #000000 80%);
+      --text-color: #eaeaea;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --card-bg: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --highlight: linear-gradient(135deg, #8e2de2, #4a00e0);
+    }
+    body.light {
+      --bg-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      --text-color: #222;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --card-bg: rgba(255,255,255,0.8);
+      --border: rgba(0,0,0,0.1);
+      --highlight: linear-gradient(135deg, #ff6ec4, #7873f5);
+    }
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+
+    /* NÚT QUAY VỀ TRANG CHỦ INDEX */
+    .nav-home {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+    }
+    .nav-home a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 8px 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: 0.3s;
+    }
+    .nav-home a:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .background-overlay {
+      position: fixed;
+      inset: 0;
+      background: url('img-11') center/cover no-repeat;
+      opacity: 0.25;
+      filter: blur(8px);
+      z-index: -1;
+    }
+    .main-content { position: relative; z-index: 1; padding: 50px; color: #fff; }
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 1100px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.6), inset 0 0 20px rgba(255,255,255,0.02);
+    }
+    header { text-align: center; padding: 60px 20px; }
+    header h1 { font-size: 48px; margin-bottom: 10px; }
+    header p { opacity: 0.8; }
+    .toggle-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      color: inherit;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+    .slider { width: 100%; overflow: hidden; position: relative; padding: 10px 0; }
+    .slider-track { display: flex; gap: 16px; animation: scroll 25s linear infinite; }
+    .slide { flex: 0 0 calc(100% / 3); }
+    .slide img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .slider:hover .slider-track { animation-play-state: paused; }
+    .timeline-horizontal { display: flex; justify-content: space-between; max-width: 1200px; margin: 50px auto; gap: 20px; z-index: 2; }
+    .item { flex: 1; display: flex; flex-direction: column; opacity: 0; transform: translateY(30px); transition: 0.6s ease; }
+    .item.show { opacity: 1; transform: translateY(0); }
+    .img-box { cursor: pointer; overflow: hidden; border-radius: 12px; }
+    .img-box img { width: 100%; display: block; transition: 0.4s; }
+    .img-box:hover img { transform: scale(1.05); }
+    .content { max-height: 0; overflow: hidden; transition: all 0.5s ease; background: rgba(0,0,0,0.4); border-radius: 0 0 12px 12px; margin-top: 5px; }
+    .item.active .content { max-height: 200px; }
+    .content p { padding: 10px; }
+    .reveal span { opacity: 0; display: inline-block; transform: translateY(20px); }
+    @keyframes revealText { to { opacity: 1; transform: translateY(0); } }
+    .glass-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 25px;
+      margin: 30px auto;
+      max-width: 1200px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .photo-item { border-radius: 15px; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.1); background: #000; transition: 0.3s; }
+    .photo-item img { width: 100%; height: 220px; object-fit: cover; display: block; transition: 0.5s; }
+    .photo-item:hover { transform: scale(1.03); border-color: #ff4081; }
+    #backToTop {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); color: #fff; font-size: 20px; cursor: pointer;
+      opacity: 0; transform: translateY(20px); transition: all 0.4s ease; z-index: 999;
+    }
+    #backToTop.show { opacity: 1; transform: translateY(0); }
+    .game-link-btn {
+      display: inline-block; padding: 12px 25px; margin-top: 15px; border-radius: 30px;
+      background: var(--highlight); color: white; text-decoration: none; font-weight: bold; transition: 0.3s;
+    }
+    footer { text-align: center; padding: 30px; opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+  <div class="nav-home">
+    <a href="index.html">← Trang Chủ</a>
+  </div>
+
+  <div class="background-overlay"></div>
+
+  <div class="main-content">
+    <header class="glass">
+      <h1>KỈ NIỆM NĂM 12</h1>
+      <p>12A4 MÃI ĐỈNH MÃI ĐỈNH</p>
+      <button id="themeToggle" class="toggle-btn">🌙 Dark</button>
+      
+      <div class="slider" style="margin-top:20px;">
+        <div class="slider-track">
+          <div class="slide"><img src="img-1" alt=""></div>
+          <div class="slide"><img src="img-2" alt=""></div>
+          <div class="slide"><img src="img-3" alt=""></div>
+          <div class="slide"><img src="img-4" alt=""></div>
+          <div class="slide"><img src="img-5" alt=""></div>
+          <div class="slide"><img src="img-6" alt=""></div>
+          <div class="slide"><img src="img-1" alt=""></div>
+          <div class="slide"><img src="img-2" alt=""></div>
+          <div class="slide"><img src="img-3" alt=""></div>
+          <div class="slide"><img src="img-4" alt=""></div>
+          <div class="slide"><img src="img-5" alt=""></div>
+          <div class="slide"><img src="img-6" alt=""></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="glass">
+      <div class="timeline-horizontal">
+        <div class="item">
+          <div class="img-box"><img src="img-7" alt=""></div>
+          <div class="content"><p class="reveal">1.Những buổi chiều cùng bạn trò chuyện dưới tán cây già, cười đùa không ngớt.</p></div>
+        </div>
+        <div class="item">
+          <div class="img-box"><img src="img-8" alt=""></div>
+          <div class="content"><p class="reveal">2.Chúng tôi từng cùng nhau vượt qua những ngày khó khăn, chia sẻ cả niềm vui lẫn nỗi buồn.</p></div>
+        </div>
+        <div class="item">
+          <div class="img-box"><img src="img-9" alt=""></div>
+          <div class="content"><p class="reveal">3.Mỗi lần nhìn lại những bức ảnh cũ, tôi lại thấy tim mình ngập tràn niềm vui.</p></div>
+        </div>
+        <div class="item">
+          <div class="img-box"><img src="img-10" alt=""></div>
+          <div class="content"><p class="reveal">4.Tình bạn không cần lời nói nhiều, chỉ cần một cái ôm hay một nụ cười hiểu nhau.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass-box">
+      <div class="box-header"><h2>✨ Khoảnh Khắc Kỷ Niệm ✨</h2></div>
+      <div class="gallery-grid">
+        <div class="photo-item"><img src="lop1.jpg" alt=""></div>
+        <div class="photo-item"><img src="lop2.jpg" alt=""></div>
+        <div class="photo-item"><img src="lop3.jpg" alt=""></div>
+        <div class="photo-item"><img src="lop4.jpg" alt=""></div>
+      </div>
+    </section>
+
+    <section class="glass" style="text-align: center;">
+      <h3>Khám phá Mini-game</h3>
+      <p>Nhấn vào nút bên dưới để bắt đầu mini-game "Bắt Sao" đầy thú vị!</p>
+      <a href="batsao.html" class="game-link-btn">Đến Trang Minigame →</a>
+    </section>
+
+    <footer>© 2026 - nhóm 4 - 12a4 thpt lê lợi</footer>
+  </div>
+
+  <button id="backToTop">↑</button>
+
+  <script>
+    const items = document.querySelectorAll('.item');
+    items.forEach(item => {
+      const img = item.querySelector('.img-box');
+      const text = item.querySelector('.reveal');
+      img.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        items.forEach(i => {
+          i.classList.remove('active');
+          const t = i.querySelector('.reveal');
+          if (t) t.classList.remove('show');
+        });
+        if (!isActive) {
+          item.classList.add('active');
+          animateText(text);
+        }
+      });
+    });
+
+    function animateText(element) {
+      const text = element.innerText;
+      element.innerHTML = '';
+      [...text].forEach((char, i) => {
+        const span = document.createElement('span');
+        span.innerText = char;
+        span.style.animation = `revealText 0.5s forwards ${i * 0.03}s`;
+        element.appendChild(span);
+      });
+      element.classList.add('show');
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('show'); });
+    }, { threshold: 0.2 });
+    items.forEach(item => observer.observe(item));
+
+    const toggleBtn = document.getElementById("themeToggle");
+    toggleBtn.onclick = () => {
+      document.body.classList.toggle("light");
+      const isLight = document.body.classList.contains("light");
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      toggleBtn.innerText = isLight ? "☀️ Light" : "🌙 Dark";
+    };
+
+    const backToTop = document.getElementById("backToTop");
+    window.addEventListener("scroll", () => {
+      backToTop.classList.toggle("show", window.scrollY > 300);
+    });
+    backToTop.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  </script>
+</body>
+</html>
