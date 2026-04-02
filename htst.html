@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Sĩ Tử 2k8</title>
+    <style>
+        /* CSS STYLE GỐC */
+        body { 
+            margin: 0; overflow: hidden; background: #f0faff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* NÚT QUAY LẠI TRANG CHỦ (BỔ SUNG) */
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            padding: 10px 20px;
+            background: #1e40af;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .back-home:hover {
+            background: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        #game-world {
+            position: relative; width: 1000px; height: 400px;
+            background: white; border-bottom: 8px solid #cbd5e1;
+            overflow: hidden; transform: rotate(3deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); border-radius: 20px;
+        }
+
+        #player {
+            width: 60px; height: 60px; position: absolute;
+            bottom: 20px; left: 100px; font-size: 50px; z-index: 10;
+        }
+
+        .jump { animation: ski-jump 0.7s ease-out; }
+        @keyframes ski-jump {
+            0% { bottom: 20px; transform: rotate(0deg); }
+            50% { bottom: 180px; transform: rotate(-10deg); }
+            100% { bottom: 20px; transform: rotate(0deg); }
+        }
+
+        .obstacle, .star, #victory-gate { position: absolute; z-index: 5; }
+        .obstacle { bottom: 20px; font-size: 40px; }
+        .star { font-size: 35px; filter: drop-shadow(0 0 10px #fbbf24); animation: pulse 1s infinite; }
+        
+        #victory-gate { 
+            bottom: 0; width: 150px; height: 280px; 
+            background: rgba(255, 215, 0, 0.2);
+            border: 8px double #ffd700; border-bottom: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 70px; box-shadow: 0 0 40px #ffeb3b;
+            border-radius: 75px 75px 0 0;
+        }
+
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        #ui { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; }
+        #status { 
+            background: #1e40af; color: white; padding: 10px 30px; 
+            border-radius: 40px; font-size: 22px; font-weight: bold;
+        }
+
+        #wish-popup {
+            position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9); border: 2px solid #fbbf24;
+            padding: 15px 25px; border-radius: 30px; font-size: 24px;
+            color: #1e3a8a; font-weight: bold; opacity: 0;
+            transition: all 0.4s; z-index: 200; pointer-events: none;
+        }
+
+        #final-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; text-align: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body onclick="jump()" onkeydown="if(event.code=='Space') jump()">
+
+    <a href="index.html" class="back-home">🏠 Trang chủ</a>
+
+    <div id="wish-popup"></div>
+    <div id="ui">
+        <div id="status">⭐ Đã thu thập: <span id="count">0</span> / 5</div>
+    </div>
+
+    <div id="game-world">
+        <div id="player">⛷️</div>
+    </div>
+
+    <div id="final-screen">
+        <h1 style="color: #ffd700; font-size: 50px;">CHÚC MỪNG SĨ TỬ 🎓</h1>
+        <p style="font-size: 28px; max-width: 800px; line-height: 1.6; padding: 0 20px;">
+            "Hành trình vạn dặm bắt đầu từ một bước chân. <br>
+            Bạn đã xuất sắc vượt qua mọi chướng ngại vật! <br><br>
+            Chúc bạn <b>vượt Vũ Môn hóa Rồng</b>, làm bài thi với sự minh mẫn tuyệt đối, <br>
+            tự tin ghi tên mình vào bảng vàng của ngôi trường Đại học hằng mơ ước. <br>
+            Thành công chắc chắn sẽ thuộc về bạn!"
+        </p>
+        <button onclick="location.reload()" style="margin-top: 30px; padding: 15px 40px; font-size: 20px; cursor: pointer; border-radius: 15px; background: #ffd700; border: none; font-weight: bold;">Chơi lại</button>
+    </div>
+
+    <script>
+        /* JAVASCRIPT GỐC */
+        const world = document.getElementById("game-world");
+        const player = document.getElementById("player");
+        const countDisplay = document.getElementById("count");
+        const popup = document.getElementById("wish-popup");
+        const finalScreen = document.getElementById("final-screen");
+        
+        let stars = 0;
+        let isGameOver = false;
+        let canSpawnStar = true;
+        let speed = 8;
+
+        const smallWishes = [
+            "Bình tĩnh tự tin! 💪",
+            "Ôn tập thật tốt! 📚",
+            "Quyết tâm đỗ NV1! 🎯",
+            "Sức khỏe dồi dào! 🍎",
+            "Điểm 10 thẳng tiến! 💯"
+        ];
+
+        function jump() {
+            if (!player.classList.contains("jump") && !isGameOver) {
+                player.classList.add("jump");
+                setTimeout(() => player.classList.remove("jump"), 700);
+            }
+        }
+
+        function showPopup() {
+            canSpawnStar = false;
+            popup.innerText = smallWishes[stars - 1] || "Cố lên!";
+            popup.style.opacity = "1";
+            popup.style.transform = "translate(-50%, -50%) scale(1.2)";
+            
+            setTimeout(() => { 
+                popup.style.opacity = "0";
+                popup.style.transform = "translate(-50%, -50%) scale(1)";
+                if (stars < 5) canSpawnStar = true; 
+            }, 2000);
+        }
+
+        function spawn() {
+            if (isGameOver) return;
+
+            if (stars === 5) {
+                setTimeout(spawnGate, 1500);
+                return;
+            }
+
+            const isStar = Math.random() < 0.3 && canSpawnStar;
+            const obj = document.createElement("div");
+            obj.className = isStar ? "star" : "obstacle";
+            obj.innerHTML = isStar ? "⭐" : (Math.random() > 0.5 ? "🌲" : "🪨");
+            obj.style.bottom = isStar ? "120px" : "20px";
+            
+            move(obj, isStar, false);
+            setTimeout(spawn, Math.random() * 1000 + 800);
+        }
+
+        function spawnGate() {
+            const gate = document.createElement("div");
+            gate.id = "victory-gate";
+            gate.innerHTML = "🎓";
+            move(gate, false, true);
+        }
+
+        function move(el, isStar, isGate) {
+            world.appendChild(el);
+            let pos = 1100;
+            let timer = setInterval(() => {
+                if (isGameOver) { clearInterval(timer); return; }
+                pos -= speed;
+                el.style.left = pos + "px";
+
+                let p = player.getBoundingClientRect();
+                let e = el.getBoundingClientRect();
+
+                if (p.right - 15 > e.left && p.left + 15 < e.right &&
+                    p.bottom - 5 > e.top && p.top + 5 < e.bottom) {
+                    
+                    if (isStar) {
+                        stars++;
+                        countDisplay.innerText = stars;
+                        showPopup();
+                        el.remove();
+                        clearInterval(timer);
+                    } else if (isGate) {
+                        isGameOver = true;
+                        finalScreen.style.display = "flex";
+                        clearInterval(timer);
+                    } else {
+                        isGameOver = true;
+                        alert("Đừng bỏ cuộc! Lần sau bạn chắc chắn sẽ làm được.");
+                        location.reload();
+                    }
+                }
+                if (pos < -200) { clearInterval(timer); el.remove(); }
+            }, 20);
+        }
+
+        spawn();
+    </script>
+</body>
+</html>

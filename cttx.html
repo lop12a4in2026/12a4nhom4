@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyến Tàu Thanh Xuân 12a4</title>
+    <style>
+        /* === 1. CSS CHUNG & LAYOUT === */
+        :root {
+            --sky-color: #a3d8f4;
+            --mountain-color: #6d9bc3;
+            --land-color: #8bc34a;
+            --train-color: #c0392b;
+            --text-color: #fff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--sky-color);
+        }
+
+        /* NÚT QUAY LẠI TRANG CHỦ (BỔ SUNG) */
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .back-home:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .train-window {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === 2. HIỆU ỨNG BỐI CẢNH (PARALLAX LAYERS) === */
+        .parallax-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+            background-position: bottom left;
+            will-change: transform;
+        }
+
+        .layer-bg {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><circle cx="100" cy="30" r="15" fill="white" opacity="0.8"/><circle cx="130" cy="35" r="20" fill="white" opacity="0.8"/><circle cx="160" cy="30" r="15" fill="white" opacity="0.8"/><circle cx="500" cy="50" r="25" fill="white" opacity="0.6"/><circle cx="800" cy="20" r="10" fill="white" opacity="0.9"/></svg>');
+            background-size: 50% 100px;
+            animation: wind 60s linear infinite;
+        }
+
+        .layer-mountains {
+            height: 60%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><path d="M0,100 L150,30 L300,80 L500,20 L700,70 L850,40 L1000,100 Z" fill="%236d9bc3"/></svg>');
+            background-size: 50% 100%;
+            animation: train-move 30s linear infinite;
+            opacity: 0.8;
+        }
+
+        .layer-ground {
+            height: 30%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><rect width="1000" height="100" fill="%238bc34a"/><circle cx="50" cy="50" r="20" fill="%232e7d32"/><circle cx="150" cy="60" r="15" fill="%232e7d32"/><circle cx="250" cy="50" r="25" fill="%232e7d32"/><circle cx="450" cy="55" r="20" fill="%232e7d32"/><circle cx="650" cy="50" r="20" fill="%232e7d32"/><circle cx="850" cy="60" r="15" fill="%232e7d32"/></svg>');
+            background-size: 50% 100%;
+            animation: train-move 10s linear infinite;
+        }
+
+        /* === 3. CON TÀU THANH XUÂN === */
+        .train-container {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 100px;
+            z-index: 10;
+        }
+
+        .train-car {
+            width: 100%;
+            height: 100%;
+            background-color: var(--train-color);
+            border-radius: 10px 10px 5px 5px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .train-car::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 260px;
+            height: 40px;
+            background-image: repeating-linear-gradient(to right, #a3d8f4 0px, #a3d8f4 40px, var(--train-color) 40px, var(--train-color) 50px);
+            border-radius: 5px;
+        }
+
+        .wheel {
+            position: absolute;
+            bottom: -10px;
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            border: 4px solid #555;
+            animation: wheel-spin 1s linear infinite;
+        }
+        .wheel-1 { left: 40px; }
+        .wheel-2 { right: 40px; }
+
+        .smoke-container {
+            position: absolute;
+            top: -20px;
+            left: 50px;
+            width: 100px;
+            height: 50px;
+        }
+        .smoke {
+            position: absolute;
+            background-color: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: smoke-rise 2s ease-out infinite;
+            opacity: 0;
+        }
+        .smoke-1 { width: 20px; height: 20px; left: 10px; animation-delay: 0s; }
+        .smoke-2 { width: 30px; height: 30px; left: 30px; animation-delay: 0.5s; }
+        .smoke-3 { width: 25px; height: 25px; left: 55px; animation-delay: 1s; }
+
+        /* === 4. TIÊU ĐỀ & SLOGAN === */
+        .main-title {
+            position: absolute;
+            top: 15%;
+            text-align: center;
+            z-index: 20;
+            width: 100%;
+        }
+
+        .main-title h1 {
+            font-size: 3.5em;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: title-glow 3s ease-in-out infinite;
+        }
+
+        .slogan-container {
+            margin-top: 20px;
+            height: 30px;
+        }
+
+        #sloganText {
+            font-size: 1.3em;
+            color: #f1c40f;
+            font-style: italic;
+            transition: opacity 0.8s ease-in-out;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 30;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: rgba(255,255,255,0.4); }
+
+        /* === 5. KEYFRAMES === */
+        @keyframes train-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes wind { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes wheel-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes smoke-rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-50px) scale(1.5); opacity: 0; } }
+        @keyframes title-glow { 0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.5); } 50% { text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 25px #f1c40f; } }
+
+        .paused .parallax-layer, .paused .wheel, .paused .smoke {
+            animation-play-state: paused !important;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="txcct.html" class="back-home">🏠 Về Trang Chủ</a>
+
+    <div class="train-window paused" id="trainWindow">
+        <div class="main-title">
+            <h1>Chuyến Tàu Thanh Xuân</h1>
+            <div class="slogan-container">
+                <p id="sloganText">Lớp 12a4 - Khóa 2024-2025</p>
+            </div>
+        </div>
+
+        <div class="parallax-layer layer-bg"></div>
+        <div class="parallax-layer layer-mountains"></div>
+        <div class="parallax-layer layer-ground"></div>
+
+        <div class="train-container">
+            <div class="smoke-container">
+                <div class="smoke smoke-1"></div>
+                <div class="smoke smoke-2"></div>
+                <div class="smoke smoke-3"></div>
+            </div>
+            <div class="train-car"></div>
+            <div class="wheel wheel-1"></div>
+            <div class="wheel wheel-2"></div>
+        </div>
+
+        <div class="controls">
+            <button id="toggleBtn">Bắt đầu hành trình</button>
+        </div>
+    </div>
+
+    <script>
+        const trainWindow = document.getElementById('trainWindow');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sloganText = document.getElementById('sloganText');
+        
+        let isRunning = false;
+
+        const slogans = [
+            "Lớp 12a4 - Khóa 2024-2025",
+            "Đại học không phải đích đến duy nhất, nhưng là nơi bắt đầu của những giấc mơ lớn.",
+            "Cảm ơn vì đã cùng nhau đi qua những năm tháng rực rỡ nhất.",
+            "Phía trước là bầu trời, dưới chân là con đường, trong tim là ý chí.",
+            "12 năm đèn sách, cháy hết mình cho một lần tỏa sáng!",
+            "Cá chép hóa rồng - Hẹn gặp lại nhau ở đỉnh vinh quang!",
+            "Đừng dừng lại khi mệt mỏi, hãy dừng lại khi đã hoàn thành.",
+            "Thanh xuân này, chúng ta có nhau là đủ."
+        ];
+
+        let sloganIndex = 0;
+
+        function rotateSlogan() {
+            sloganText.style.opacity = 0;
+            setTimeout(() => {
+                sloganIndex = (sloganIndex + 1) % slogans.length;
+                sloganText.innerText = slogans[sloganIndex];
+                sloganText.style.opacity = 1;
+            }, 800);
+        }
+
+        setInterval(rotateSlogan, 5000);
+
+        toggleBtn.addEventListener('click', () => {
+            isRunning = !isRunning;
+            if (isRunning) {
+                trainWindow.classList.remove('paused');
+                toggleBtn.textContent = 'Tạm dừng hành trình';
+            } else {
+                trainWindow.classList.add('paused');
+                toggleBtn.textContent = 'Tiếp tục hành trình';
+            }
+        });
+    </script>
+</body>
+</html>
