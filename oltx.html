@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web siêu xịn ✨</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{
+    background: linear-gradient(-45deg,#00c6ff,#0072ff,#00f2fe,#4facfe);
+    background-size:400% 400%;
+    animation:gradientBG 12s ease infinite;
+    color:white;
+    overflow-x:hidden;
+}
+@keyframes gradientBG{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+header{
+    text-align:center;
+    padding:40px;
+    font-size:28px;
+    font-weight:bold;
+    text-shadow:0 0 15px #fff,0 0 25px #00e5ff;
+}
+
+/* NÚT VỀ TRANG CHỦ BỔ SUNG */
+.btn-home {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 10001;
+    padding: 8px 15px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid white;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* NEXT BUTTON */
+#nextBtn{
+    display:block;
+    margin:10px auto;
+    padding:12px 30px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(45deg,#00e5ff,#00bcd4);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 15px #00e5ff,0 0 25px #00bcd4;
+    transition:transform 0.2s, box-shadow 0.2s;
+}
+#nextBtn:hover{
+    transform:scale(1.1);
+    box-shadow:0 0 25px #00e5ff,0 0 35px #00bcd4;
+}
+
+/* LOADING */
+#loading{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.8);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+#loading span{
+    font-size:32px;
+    font-weight:bold;
+    animation:wave 1.5s infinite;
+}
+@keyframes wave{
+    0%{transform:translateY(0);}
+    25%{transform:translateY(-12px);}
+    50%{transform:translateY(0);}
+    75%{transform:translateY(12px);}
+    100%{transform:translateY(0);}
+}
+
+.game-area{display:flex;justify-content:center;gap:50px;margin-top:20px;flex-wrap:wrap;}
+#gameBoard{
+    display:grid;
+    grid-template-columns:repeat(6,80px);
+    gap:15px;
+}
+.card-game{
+    width:80px;height:80px;
+    background:linear-gradient(145deg,#ffffff22,#ffffff33);
+    border-radius:20px;
+    cursor:pointer;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 15px #00e5ff88,0 0 25px #00e5ff55 inset;
+    transition:transform 0.3s, box-shadow 0.3s, border 0.3s;
+    border: 2px solid transparent;
+}
+.card-game:hover{
+    transform:scale(1.2);
+    box-shadow:0 0 30px #00e5ffaa,0 0 50px #00e5ff66 inset;
+    border: 2px solid #00ffff;
+}
+.card-game img{
+    width:100%;height:100%;
+    object-fit:cover;
+    border-radius:16px;
+    display:none;
+}
+
+/* mini collected cards */
+.mini{
+    width:55px;height:55px;
+    margin:5px;
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    box-shadow:0 0 12px #00e5ff,0 0 25px #00bcd4 inset;
+    transition:transform 0.2s;
+}
+.mini:hover{transform:scale(1.3);}
+.mini img{width:100%;height:100%;object-fit:cover;}
+
+/* overlay xem ảnh lớn */
+#imgOverlay {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+#imgOverlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 15px;
+    box-shadow: 0 0 30px #00e5ff;
+    animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+    0% {transform: scale(0.5); opacity: 0;}
+    100% {transform: scale(1); opacity: 1;}
+}
+
+/* buttons */
+button{
+    margin-top:15px;
+    padding:10px 22px;
+    border:none;
+    border-radius:22px;
+    background:#ff4081;
+    color:white;
+    cursor:pointer;
+    box-shadow:0 0 12px #ff4081,0 0 20px #ff80ab inset;
+    transition:transform 0.2s, box-shadow 0.2s;
+}
+button:hover{
+    transform:scale(1.1);
+    box-shadow:0 0 20px #ff4081,0 0 30px #ff80ab inset;
+}
+
+/* video */
+#videoBox{
+    display:none;
+    text-align:center;
+    margin-top:25px;
+}
+#videoBox video{
+    width:80%;
+    max-width:500px;
+    aspect-ratio:16/9;
+    display:block;
+    margin:15px auto;
+    border-radius:20px;
+    box-shadow:0 0 25px #00e5ff;
+}
+
+/* sparkle */
+.sparkle{
+    position:fixed;width:5px;height:5px;background:white;border-radius:50%;
+    box-shadow:0 0 15px white,0 0 25px #00e5ff;
+    animation:twinkle 1.5s infinite;
+}
+@keyframes twinkle{
+    0%,100%{opacity:0;}
+    50%{opacity:1;}
+}
+
+footer{text-align:center;padding:25px;margin-top:40px;font-size:18px;text-shadow:0 0 10px #fff;}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="btn-home">🏠 Trang chủ</a>
+
+<header>✨ ký ức ✨</header>
+
+<button id="nextBtn">⏭️ NEXT</button>
+
+<h2 style="text-align:center;">🎮 Ôn lại tuổi xuân</h2>
+
+<div class="game-area">
+<div id="gameBoard"></div>
+<div>
+<h3>🏆 Kỉ niệm 12</h3>
+<div id="collectedBox"></div>
+<button id="videoBtn" style="display:none;">🎬 Xem video</button>
+</div>
+</div>
+
+
+<div id="imgOverlay">
+    <img src="" alt="Ảnh lớn">
+</div>
+
+
+<div id="loading"><span>Chờ xíu...</span></div>
+
+<div id="videoBox">
+    <video controls>
+        <source src="lop.mp4" type="video/mp4">
+    </video>
+    <video controls>
+        <source src="lop1.mp4" type="video/mp4">
+    </video>
+    <video controls>
+        <source src="lop2.mp4" type="video/mp4">
+    </video>
+    <video controls>
+        <source src="lop3.mp4" type="video/mp4">
+    </video>
+    <video controls>
+        <source src="lop5.mp4" type="video/mp4">
+    </video>
+</div>
+
+
+<audio id="flipSound" src="lop.mp3"></audio>
+
+<footer>
+<p id="time"></p>
+</footer>
+
+<script>
+
+setInterval(()=>{
+    let s=document.createElement("div");
+    s.className="sparkle";
+    s.style.left=Math.random()*window.innerWidth+"px";
+    s.style.top=Math.random()*window.innerHeight+"px";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1500);
+},120);
+
+// time
+setInterval(()=>time.innerHTML="🕒 "+new Date().toLocaleTimeString(),1000);
+
+
+const images=[
+"lop1.jpg","lop2.jpg","lop3.jpg","lop4.jpg","lop5.jpg","lop6.jpg",
+"lop7.jpg","lop8.jpg","lop9.jpg","lop10.jpg","lop11.jpg","lop12.jpg",
+"lop13.jpg","lop14.jpg","lop15.jpg","lop16.jpg","lop17.jpg","lop18.jpg",
+"lop19.jpg","lop20.jpg","lop21.jpg","lop22.jpg","lop23.jpg"
+];
+let cards=[...images,...images].sort(()=>0.5-Math.random());
+
+let first=null,second=null,lock=false;
+let matchedCount=0;
+
+const flipSound = document.getElementById("flipSound");
+
+cards.forEach(src=>{
+    let c=document.createElement("div");
+    c.className="card-game";
+
+    let img=document.createElement("img");
+    img.src=src;
+
+    c.appendChild(img);
+
+    c.onclick=()=>{
+        if(lock||img.style.display==="block") return;
+
+        
+        flipSound.currentTime=0;
+        flipSound.play();
+
+        img.style.display="block";
+
+        if(!first){first=c;}
+        else{
+            second=c;lock=true;
+
+            let img1=first.querySelector("img").src;
+            let img2=second.querySelector("img").src;
+
+            if(img1===img2){
+                setTimeout(()=>{
+                    move(first);
+                    second.style.display="none";
+                    matchedCount++;
+
+                    if(matchedCount===images.length){
+                        videoBtn.style.display="block";
+                    }
+
+                    reset();
+                },500);
+            }else{
+                setTimeout(()=>{
+                    first.querySelector("img").style.display="none";
+                    second.querySelector("img").style.display="none";
+                    reset();
+                },700);
+            }
+        }
+    };
+
+    gameBoard.appendChild(c);
+});
+
+function reset(){first=null;second=null;lock=false;}
+
+function move(card){
+    let src = card.querySelector("img").src;
+
+    let existed = [...collectedBox.children].some(div =>
+        div.querySelector("img").src === src
+    );
+    if(existed) return;
+
+    let mini=document.createElement("div");
+    mini.className="mini";
+
+    let img=document.createElement("img");
+    img.src=src;
+
+    mini.appendChild(img);
+    collectedBox.appendChild(mini);
+
+    card.style.opacity="0.5";
+}
+
+
+const passwords = [
+"truong gia bao","le quoc cuong","le vo ngoc dung","le ngoc thuy duong",
+"nguyen minh dat","pham huu tien dat","do hai dang","nguyen ngoc ha",
+"nguyen trung hieu","pham khanh hung","tran nguyen ha huong",
+"dau thi yen linh","le hoang khanh linh","pham ha linh",
+"pham minh long","vuong le bao ngoc","dang ngoc yen nhi",
+"doan ngoc uyen nhi","truong uyen nhi","tran le minh phu",
+"bui hoang phuc","pham phu quy","hoang vi the tai",
+"do thi thanh thuy","dao nguyen bao thy","hoang huyen trang",
+"hoang thi kim trang","le thi ngoc trinh","huynh huu bao trung",
+"le quang trung","nguyen minh trung","nguyen thi cam tu",
+"dinh trong tuan","le quoc viet","le thi ngoc vy","le quoc vinh"
+];
+
+
+nextBtn.onclick = ()=>{
+    loading.style.display="flex";
+
+    setTimeout(()=>{
+        loading.style.display="none";
+        videoBtn.style.display="block";
+        window.scrollTo(0,document.body.scrollHeight);
+    },2000);
+};
+
+
+videoBtn.onclick = ()=>{
+    let pass = prompt("Nhập mật khẩu:");
+
+    if(pass && passwords.includes(pass.toLowerCase())){
+        videoBox.style.display="block";
+window.scrollTo(0,document.body.scrollHeight);
+    }else{
+        alert("Sai mật khẩu!");
+    }
+};
+const overlay = document.getElementById("imgOverlay");
+const overlayImg = overlay.querySelector("img");
+
+collectedBox.addEventListener("click", e => {
+    const target = e.target;
+    if(target.tagName === "IMG" && target.parentElement.classList.contains("mini")) {
+        overlayImg.src = target.src;
+        overlay.style.display = "flex";
+    }
+});
+
+
+overlay.onclick = ()=> overlay.style.display="none";
+</script>
+
+</body>
+</html>
