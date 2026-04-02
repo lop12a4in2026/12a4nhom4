@@ -1,0 +1,31 @@
+body { background-color: #050505; color: white; overflow-x: hidden; margin: 0; font-family: 'Inter', sans-serif; }
+
+/* BACKGROUND NỀN CHỦ ĐẠO */
+.hero-section {
+    position: relative;
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('logo.jpg');
+    background-size: cover; background-position: center; background-attachment: fixed;
+    width: 100%; height: 100vh;
+}
+
+#particleCanvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
+.glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+
+/* MENU TRANG CON MỚI */
+.menu-grid-premium { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; padding: 40px 0; }
+.menu-card-premium {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; padding: 25px; text-align: center; transition: 0.4s; text-decoration: none;
+}
+.menu-card-premium:hover { transform: translateY(-10px); background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; }
+.menu-card-premium i { font-size: 1.8rem; color: #3b82f6; margin-bottom: 10px; display: block; }
+.menu-card-premium h3 { font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 0.9rem; color: #fff; }
+
+/* PHÒNG TRUYỀN THÔNG & KÝ ỨC */
+.sub-page { display: none; min-height: 100vh; padding-top: 100px; }
+.active-page { display: block; }
+.video-wrapper-16-9 { position: relative; padding-top: 56.25%; background: #000; border-radius: 20px; overflow: hidden; }
+.video-wrapper-16-9 video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.masonry-grid { column-count: 2; column-gap: 10px; }
+@media (min-width: 768px) { .masonry-grid { column-count: 4; } }
+.masonry-item { break-inside: avoid; margin-bottom: 10px; border-radius: 12px; overflow: hidden; }

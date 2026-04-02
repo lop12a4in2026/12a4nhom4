@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title> THƯ VIỆN KÍ ỨC </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #1a1a1a, #000000 80%);
+      --text-color: #000000;
+      --glass-bg: rgba(0, 0, 0, 0.05);
+      --card-bg: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --highlight: linear-gradient(135deg, #8e2de2, #4a00e0);
+    }
+    body.light {
+      --bg-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      --text-color: #222;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --card-bg: rgba(255,255,255,0.8);
+      --border: rgba(0,0,0,0.1);
+      --highlight: linear-gradient(135deg, #ff6ec4, #7873f5);
+    }
+    body { background: var(--bg-gradient); color: var(--text-color); min-height: 100vh; overflow-x: hidden; margin: 0; }
+    .bg-shape { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: 0; }
+    .shape1 { width: 300px; height: 300px; background: #6a00ff; top: -50px; left: -50px; opacity: 0.2; }
+    .shape2 { width: 400px; height: 400px; background: #00f2fe; bottom: -100px; right: -100px; }
+    .glass { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 20px; padding: 30px; margin: 20px auto; width: 90%; max-width: 1100px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); }
+    header { text-align: center; padding: 60px 20px; }
+    header h1 { font-size: 48px; margin-bottom: 10px; }
+    header p { opacity: 0.8; }
+    .section { display: flex; flex-wrap: wrap; align-items: center; gap: 30px; }
+    .text, .image { flex: 1; min-width: 250px; }
+    .image img { width: 100%; border-radius: 15px; }
+    .title { margin-bottom: 20px; }
+    .card { padding: 20px; border-radius: 15px; background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(10px); transition: 0.3s; }
+    .card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+    .btn { display: inline-block; padding: 12px 25px; margin-top: 15px; border-radius: 30px; background: var(--highlight); color: white; text-decoration: none; font-weight: bold; box-shadow: 0 0 15px rgba(138, 43, 226, 0.5); transition: 0.3s; }
+    .btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 0 25px rgba(138, 43, 226, 0.8); }
+    footer { text-align: center; padding: 30px; opacity: 0.7; }
+    .toggle-btn { margin-top: 20px; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; background: rgba(255,255,255,0.2); color: inherit; backdrop-filter: blur(10px); transition: 0.3s; }
+    #backToTop { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); color: #fff; font-size: 20px; cursor: pointer; opacity: 0; transform: translateY(20px); pointer-events: none; z-index: 999; box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition: all 0.4s ease; }
+    #backToTop.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .lamp-container { position: fixed; top: 0; right: 60px; z-index: 999; opacity: 0; transform: translateY(-20px); transition: 0.5s; }
+    .lamp-container.show { opacity: 1; transform: translateY(0); }
+    .bulb { width: 40px; height: 40px; background: #222; border-radius: 50%; transition: 0.4s; }
+    .bulb.on { background: #ffd54f; box-shadow: 0 0 20px #ffd54f, 0 0 60px rgba(255, 213, 79, 0.6); }
+    .cord { width: 3px; height: 120px; background: #ccc; margin-top: 5px; position: relative; cursor: pointer; }
+    .video-swiper { width: 100%; max-width: 900px; margin: 50px auto; }
+    .video-swiper video { width: 100%; max-height: 500px; border-radius: 15px; object-fit: cover; }
+    .carousel-wrapper { width: 100%; overflow: hidden; padding: 20px 0; }
+    .carousel-row { width: 100%; overflow: hidden; margin: 10px 0; }
+    .carousel-track { display: flex; width: max-content; }
+    .carousel-track img { width: 200px; height: 130px; object-fit: cover; margin: 0 10px; border-radius: 10px; transition: transform 0.3s ease; }
+    .row-top .carousel-track { animation: scroll-right 20s linear infinite; }
+    .row-bottom .carousel-track { animation: scroll-left 20s linear infinite; }
+    @keyframes scroll-right { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes scroll-left { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+    .timeline-wrapper { width: 100%; overflow: hidden; padding: 20px; }
+    .timeline { display: flex; gap: 10px; }
+    .timeline-item { flex: 1; position: relative; transition: flex 0.5s ease; }
+    .timeline-item input { display: none; }
+    .timeline-card { display: block; height: 300px; background-size: cover; background-position: center; border-radius: 12px; cursor: pointer; overflow: hidden; position: relative; }
+    .overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: rgba(0,0,0,0.6); color: #fff; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; }
+    .timeline-item input:checked + .timeline-card .overlay { opacity: 1; transform: translateY(0); }
+    .timeline-item:has(input:checked) { flex: 2; }
+    .gallery-wrapper { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .gallery-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.3s ease; }
+    .lightbox { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 9999; }
+    .lightbox-img { max-width: 90%; max-height: 90%; border-radius: 10px; }
+    .choice-wrapper { position: relative; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center; border: 2px solid #ddd; border-radius: 12px; }
+    #noBtn { background-color: #dc3545; color: #fff; position: relative; }
+    #yesBtn { background-color: #28a745; color: #fff; }
+    .result { font-size: 50px; opacity: 0; margin-top: 30px; }
+    @keyframes heartJump { 0% { transform: scale(1); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1.3); opacity: 1; } }
+    .falling-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 9999; }
+    .falling-particles span { position: absolute; top: -50px; animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+    @keyframes fall { 0% { transform: translateY(0px) translateX(0px); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(100vh) translateX(20px); opacity: 0; } }
+    .custom-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; filter: blur(5px); transition: background-image 1s ease-in-out; }
+    
+    /* Nút Quay về trang chủ */
+    .back-home-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10001;
+      background: var(--highlight);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+
+  <a href="index.html" class="back-home-btn">← Quay về trang chủ</a>
+
+  <div class="bg-shape shape1"></div>
+  <div class="bg-shape shape2"></div>
+
+  <header class="glass">
+    <h1> THƯ VIỆN KÍ ỨC </h1>
+    <p> Lớp 12a4 mãi đỉnh-mãi đỉnh</p>
+    <button id="themeToggle" class="toggle-btn">🌙 Dark</button>
+  </header>
+
+  <header class="glass">
+    <h1> CÙNG XEM LẠI KỈ NIỆM </h1>
+    <div class="video-swiper">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><video src="vd1.mp4" controls></video></div>
+                <div class="swiper-slide"><video src="vd2.mp4" controls></video></div>
+                <div class="swiper-slide"><video src="vd3.mp4" controls></video></div>
+                <div class="swiper-slide"><video src="vd4.mp4" controls></video></div>
+                <div class="swiper-slide"><video src="vd5.mp4" controls></video></div>
+                <div class="swiper-slide"><video src="vd6.mp4" controls></video></div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+  </header>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper(".mySwiper", {
+        loop: true,
+        spaceBetween: 20,
+        centeredSlides: true,
+        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        pagination: { el: ".swiper-pagination", clickable: true }
+    });
+  </script>
+
+  <section class="glass section">
+    <div class="carousel-wrapper">
+        <div class="carousel-row row-top">
+            <div class="carousel-track">
+                <img src="anh1.jpg"><img src="anh2.jpg"><img src="anh3.jpg"><img src="anh4.jpg"><img src="anh5.jpg">
+                <img src="anh1.jpg"><img src="anh2.jpg"><img src="anh3.jpg"><img src="anh4.jpg"><img src="anh5.jpg">
+            </div>
+        </div>
+        <div class="carousel-row row-bottom">
+            <div class="carousel-track">
+                <img src="anh6.jpg"><img src="anh7.jpg"><img src="anh8.jpg"><img src="anh9.jpg"><img src="anh10.jpg">
+                <img src="anh6.jpg"><img src="anh7.jpg"><img src="anh8.jpg"><img src="anh9.jpg"><img src="anh10.jpg">
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="glass">
+    <h2 class="title"> NHỮNG ĐIỀU MUỐN NÓI </h2>
+    <div class="timeline-wrapper">
+        <div class="timeline">
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item1" checked>
+                <label for="item1" class="timeline-card" style="background-image: url('anh11.jpg');">
+                    <div class="overlay">
+                        <h3> 1</h3>
+                        <p>Khi nhìn lại quãng đời học sinh, điều đáng nhớ nhất không phải là điểm số mà là những khoảnh khắc bên nhau...</p>
+                    </div>
+                </label>
+            </div>
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item2">
+                <label for="item2" class="timeline-card" style="background-image: url('anh12.jpg');">
+                    <div class="overlay">
+                        <h3> 2</h3>
+                        <p>Có thể hôm nay bạn chưa đạt được kết quả như mong muốn, nhưng đừng vội nản lòng...</p>
+                    </div>
+                </label>
+            </div>
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item3">
+                <label for="item3" class="timeline-card" style="background-image: url('anh13.jpg');">
+                    <div class="overlay">
+                        <h3> 3</h3>
+                        <p>Tuổi học sinh là quãng thời gian đẹp nhất với những kỉ niệm khó quên bên bạn bè và thầy cô...</p>
+                    </div>
+                </label>
+            </div>
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item4">
+                <label for="item4" class="timeline-card" style="background-image: url('anh14.jpg');">
+                    <div class="overlay">
+                        <h3> 4</h3>
+                        <p>Có những lúc chúng ta mệt mỏi vì bài vở, áp lực thi cử, nhưng chính những khó khăn ấy lại giúp ta trưởng thành hơn...</p>
+                    </div>
+                </label>
+            </div>
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item5">
+                <label for="item5" class="timeline-card" style="background-image: url('anh15.jpg');">
+                    <div class="overlay">
+                        <h3> 5</h3>
+                        <p>Những kỉ niệm ngồi cùng bàn, cùng nhau chép bài hay bị thầy cô nhắc nhở sẽ trở thành câu chuyện để nhớ mãi...</p>
+                    </div>
+                </label>
+            </div>
+            <div class="timeline-item">
+                <input type="radio" name="timeline" id="item6">
+                <label for="item6" class="timeline-card" style="background-image: url('anh16.jpg');">
+                    <div class="overlay">
+                        <h3> 6</h3>
+                        <p>Những kỉ niệm ngồi cùng bàn, cùng nhau chép bài hay bị thầy cô nhắc nhở sẽ trở thành câu chuyện để nhớ mãi...</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="gallery-wrapper">
+    <h2>Danh mục ảnh</h2>
+    <h4>Gói gọn trong từng khung hình là những mảnh ghép quý giá của tình bạn.</h4>
+    <div class="gallery-grid">
+        <img src="anh1.jpg" alt="Ảnh 1"><img src="anh2.jpg" alt="Ảnh 2"><img src="anh3.jpg" alt="Ảnh 3">
+        <img src="anh4.jpg" alt="Ảnh 4"><img src="anh5.jpg" alt="Ảnh 5"><img src="anh6.jpg" alt="Ảnh 6">
+        <img src="anh7.jpg" alt="Ảnh 7"><img src="anh8.jpg" alt="Ảnh 8"><img src="anh9.jpg" alt="Ảnh 9">
+        <img src="anh10.jpg" alt="Ảnh 10"><img src="anh11.jpg" alt="Ảnh 11"><img src="anh12.jpg" alt="Ảnh 12">
+        <img src="anh13.jpg" alt="Ảnh 13"><img src="anh14.jpg" alt="Ảnh 14"><img src="anh15.jpg" alt="Ảnh 15">
+        <img src="anh16.jpg" alt="Ảnh 16"><img src="anh17.jpg" alt="Ảnh 17"><img src="anh18.jpg" alt="Ảnh 18">
+        <img src="anh19.jpg" alt="Ảnh 19"><img src="anh20.jpg" alt="Ảnh 20"><img src="anh21.jpg" alt="Ảnh 21">
+        <img src="anh22.jpg" alt="Ảnh 22"><img src="anh23.jpg" alt="Ảnh 23"><img src="anh24.jpg" alt="Ảnh 24">
+        <img src="anh25.jpg" alt="Ảnh 25"><img src="anh26.jpg" alt="Ảnh 26"><img src="anh27.jpg" alt="Ảnh 27">
+        <img src="anh28.jpg" alt="Ảnh 28"><img src="anh29.jpg" alt="Ảnh 29"><img src="anh30.jpg" alt="Ảnh 30">
+        <img src="anh31.jpg" alt="Ảnh 31"><img src="anh32.jpg" alt="Ảnh 32"><img src="anh33.jpg" alt="Ảnh 33">
+        <img src="anh34.jpg" alt="Ảnh 34"><img src="anh35.jpg" alt="Ảnh 35"><img src="anh36.jpg" alt="Ảnh 36">
+        <img src="anh37.jpg" alt="Ảnh 37"><img src="anh38.jpg" alt="Ảnh 38"><img src="anh39.jpg" alt="Ảnh 39">
+        <img src="anh40.jpg" alt="Ảnh 40"><img src="anh41.jpg" alt="Ảnh 41"><img src="anh42.jpg" alt="Ảnh 42">
+        <img src="anh43.jpg" alt="Ảnh 43">
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close">&times;</span>
+        <img class="lightbox-img" src="" alt="Ảnh phóng to">
+    </div>
+  </section>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.querySelector('.lightbox-img');
+    const closeBtn = document.querySelector('.lightbox .close');
+    document.querySelectorAll('.gallery-grid img').forEach(img => {
+        img.addEventListener('click', () => { lightbox.style.display = 'flex'; lightboxImg.src = img.src; });
+    });
+    closeBtn.addEventListener('click', () => { lightbox.style.display = 'none'; });
+    lightbox.addEventListener('click', e => { if(e.target === lightbox) lightbox.style.display = 'none'; });
+  </script>
+
+  <section class="glass section">
+    <div class="choice-wrapper">
+        <h2 id="question">Bạn có muốn quay lại những khoảnh khắc trên không?</h2>
+        <div class="choice-buttons">
+            <button id="yesBtn">Có</button>
+            <button id="noBtn">Không</button>
+        </div>
+        <p id="message"></p>
+        <div id="result" class="result"> ❤️ cảm ơn vì lựa chọn yêu yêu ❤️ </div>
+    </div>
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const question = document.getElementById('question');
+        const message = document.getElementById('message');
+        const result = document.getElementById('result');
+        let noCount = 0;
+        noBtn.addEventListener('mouseenter', () => {
+            noCount++;
+            const x = Math.random() * 200 - 100;
+            const y = Math.random() * 100 - 50;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            noBtn.style.transition = 'transform 0.3s ease';
+            if(noCount >= 6) {
+                noBtn.style.display = 'none';
+                message.textContent = 'Bây giờ bạn bắt buộc phải chọn "Có"!';
+            } else {
+                const hints = ['Thử chọn "Có" nhé!', 'Không thì sao nhỉ?', 'Chọn "Có" đi bạn!', 'Đừng chọn "Không"!', 'Câu trả lời là "Có"!', 'Một lần nữa thôi, chọn "Có" nào!'];
+                message.textContent = hints[Math.min(noCount-1, hints.length-1)];
+            }
+        });
+        yesBtn.addEventListener('click', () => {
+            question.textContent = 'Bạn đã chọn "Có"! Kết quả xuất hiện.';
+            message.textContent = '';
+            noBtn.style.display = 'none';
+            yesBtn.disabled = true;
+            result.style.opacity = '1';
+            result.style.animation = 'heartJump 1s ease forwards';
+        });
+    </script>
+  </section>
+
+  <section class="glass section">
+    <div class="image"><img src="https://picsum.photos/500/301" alt="image"></div>
+    <div class="text">
+        <h2>BÍ IDEA </h2>
+        <p>Cảm ơn vì đã xem.</p>
+        <a href="#" class="btn">Khám phá</a>
+    </div>
+  </section>
+
+  <footer> © 2026 - nhom4_12a4_THPTLELOI </footer>
+
+  <script>
+    const toggleBtn = document.getElementById("themeToggle");
+    if (localStorage.getItem("theme") === "light") { document.body.classList.add("light"); toggleBtn.innerText = "☀️ Light"; }
+    toggleBtn.onclick = () => {
+        document.body.classList.toggle("light");
+        if (document.body.classList.contains("light")) { localStorage.setItem("theme", "light"); toggleBtn.innerText = "☀️ Light"; }
+        else { localStorage.setItem("theme", "dark"); toggleBtn.innerText = "🌙 Dark"; }
+    };
+  </script>
+
+  <button id="backToTop">↑</button>
+  <script>
+    const backToTop = document.getElementById("backToTop");
+    window.addEventListener("scroll", () => { if (window.scrollY > 300) backToTop.classList.add("show"); else backToTop.classList.remove("show"); });
+    backToTop.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); });
+  </script>
+
+  <div class="falling-particles"></div>
+  <script>
+    const container = document.querySelector('.falling-particles');
+    const flowers = ['🌸','🌼','🌺','💮','🌻','🏵️'];
+    for(let i=0; i<50; i++){
+        const flower = document.createElement('span');
+        flower.textContent = flowers[Math.floor(Math.random()*flowers.length)];
+        flower.style.left = Math.random() * 100 + 'vw';
+        flower.style.fontSize = (15 + Math.random()*20) + 'px';
+        flower.style.animationDuration = (5 + Math.random()*5) + 's';
+        flower.style.animationDelay = (Math.random()*5) + 's';
+        container.appendChild(flower);
+    }
+  </script>
+
+  <div class="custom-background"></div>
+  <script>
+    const bgImages = ['anh1.jpg', 'anh2.jpg', 'anh3.jpg', 'anh4.jpg', 'anh5.jpg'];
+    let bgIndex = 0;
+    const bgDiv = document.querySelector('.custom-background');
+    bgDiv.style.backgroundImage = `url('${bgImages[0]}')`;
+    setInterval(() => { bgIndex = (bgIndex + 1) % bgImages.length; bgDiv.style.backgroundImage = `url('${bgImages[bgIndex]}')`; }, 10000);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+  <TITLE>Thanh Xuân - Blue Heart Gallery & Music</TITLE>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* --- CSS NỀN TRÁI TIM (GIỮ NGUYÊN) --- */
+    html, body {
+      height: 100%; padding: 0; margin: 0; background: #000;
+      overflow: hidden; font-family: 'Arial', sans-serif;
+    }
+    canvas {
+      position: absolute; width: 100%; height: 100%; z-index: 1;
+    }
+    #pinkboard { animation: animateHeart 1.3s infinite; }
+    @keyframes animateHeart {
+      0% { transform: scale(1); }
+      30% { transform: scale(.8); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* --- LỆNH ĐIỀU HƯỚNG QUAY VỀ --- */
+    .back-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 2000;
+    }
+    .back-link {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 15px;
+      border: 1px solid #3498db;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      transition: 0.3s;
+    }
+    .back-link:hover {
+      background: #3498db;
+      color: white;
+      box-shadow: 0 0 15px #3498db;
+    }
+
+    /* --- CHỮ THANH XUÂN --- */
+    .footer-text {
+      position: fixed; bottom: 30px; width: 100%;
+      text-align: center; color: #3498db; font-size: 24px;
+      font-style: italic; z-index: 5; text-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+    }
+
+    /* --- HÀNG ẢNH CHẠY NGANG --- */
+    .gallery-wrapper {
+      position: absolute; top: 45%; 
+      left: 0; transform: translateY(-50%);
+      width: 100%; z-index: 10; overflow: hidden;
+      white-space: nowrap; padding: 20px 0;
+    }
+    .photo-track {
+      display: inline-block;
+      /* Tăng thời gian animation lên 60s vì có rất nhiều ảnh (43 ảnh) */
+      animation: scrollPhotos 60s linear infinite;
+    }
+    .gallery-wrapper:hover .photo-track { animation-play-state: paused; }
+    .photo-item {
+      display: inline-block;
+      width: 140px; height: 190px;
+      margin: 0 12px; border: 5px solid #fff;
+      border-radius: 10px; overflow: hidden;
+      cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+    }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-item:hover { transform: scale(1.1) rotate(3deg); border-color: #3498db; }
+    @keyframes scrollPhotos { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+    /* --- MODAL PHÓNG TO ẢNH --- */
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9); z-index: 100;
+      display: none; justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal.show { display: flex; opacity: 1; }
+    .modal img { max-width: 80%; max-height: 80%; border: 10px solid #fff; border-radius: 15px; transform: scale(0.8); transition: transform 0.3s ease; }
+    .modal.show img { transform: scale(1); }
+    .close-modal { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; cursor: pointer; }
+
+    /* --- CSS CHO ĐĨA NHẠC QUAY --- */
+    .music-control-container {
+      position: fixed; top: 20px; right: 20px;
+      z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .cd-player {
+      width: 60px; height: 60px; background-color: #111;
+      border: 4px solid #fff; border-radius: 50%;
+      box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+      overflow: hidden; cursor: pointer; position: relative; transition: transform 0.3s ease;
+    }
+    .cd-player.playing .cd-label { animation: rotateCD 5s linear infinite; }
+    .cd-label {
+      width: 100%; height: 100%;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23222"/><circle cx="50" cy="50" r="15" fill="%233498db"/><circle cx="50" cy="50" r="5" fill="%23000"/></svg>');
+      background-size: cover; border-radius: 50%;
+    }
+    .music-tip { color: white; font-size: 10px; background: rgba(52, 152, 219, 0.5); padding: 2px 6px; border-radius: 10px; pointer-events: none; }
+    @keyframes rotateCD { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</HEAD>
+
+<BODY>
+  <div class="back-home">
+    <a href="index.html" class="back-link">🏠 Quay về trang chủ</a>
+  </div>
+
+  <canvas id="pinkboard"></canvas>
+
+  <div class="music-control-container">
+    <div class="cd-player" id="cdPlayer" onclick="toggleMusic()" title="Bấm để phát/dừng nhạc">
+      <div class="cd-label"></div>
+    </div>
+    <div class="music-tip">Bấm đĩa để nghe nhạc 🎵</div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="amnhac.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="gallery-wrapper">
+    <div class="photo-track" id="photoTrack">
+      </div>
+  </div>
+
+  <div class="footer-text">Thanh xuân của chúng ta</div>
+
+  <div class="modal" id="imgModal" onclick="closeZoom()">
+    <span class="close-modal">&times;</span>
+    <img id="zoomTarget" src="">
+  </div>
+
+  <script>
+    // --- TỰ ĐỘNG TẠO 43 ẢNH ---
+    const track = document.getElementById('photoTrack');
+    for (let i = 1; i <= 43; i++) {
+      const item = document.createElement('div');
+      item.className = 'photo-item';
+      item.setAttribute('onclick', `zoomImg('anh${i}.jpg')`);
+      item.innerHTML = `<img src="anh${i}.jpg" loading="lazy">`;
+      track.appendChild(item);
+    }
+
+    // --- JS NHẠC ---
+    const bgMusic = document.getElementById('bgMusic');
+    const cdPlayer = document.getElementById('cdPlayer');
+
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        bgMusic.play().catch(error => {
+          alert("Bấm vào đĩa nhạc lần nữa để xác nhận phát nhạc bạn nhé! 🎵");
+        });
+        cdPlayer.classList.add('playing');
+      } else {
+        bgMusic.pause();
+        cdPlayer.classList.remove('playing');
+      }
+    }
+
+    // --- JS NỀN TRÁI TIM ---
+    var settings = { particles: { length: 2000, duration: 2, velocity: 100, effect: -1.3, size: 13 }, };
+    (function(){var b=0;var c=["ms","moz","webkit","o"];for(var a=0;a<c.length&&!window.requestAnimationFrame;++a){window.requestAnimationFrame=window[c[a]+"RequestAnimationFrame"];window.cancelAnimationFrame=window[c[a]+"CancelAnimationFrame"]||window[c[a]+"CancelRequestAnimationFrame"]}if(!window.requestAnimationFrame){window.requestAnimationFrame=function(h,e){var d=new Date().getTime();var f=Math.max(0,16-(d-b));var g=window.setTimeout(function(){h(d+f)},f);b=d+f;return g}}if(!window.cancelAnimationFrame){window.cancelAnimationFrame=function(d){clearTimeout(d)}}}());
+    var Point = (function() {
+      function Point(x, y) { this.x = (typeof x !== 'undefined') ? x : 0; this.y = (typeof y !== 'undefined') ? y : 0; }
+      Point.prototype.clone = function() { return new Point(this.x, this.y); };
+      Point.prototype.length = function(length) { if (typeof length == 'undefined') return Math.sqrt(this.x * this.x + this.y * this.y); this.normalize(); this.x *= length; this.y *= length; return this; };
+      Point.prototype.normalize = function() { var length = this.length(); this.x /= length; this.y /= length; return this; };
+      return Point;
+    })();
+    var Particle = (function() {
+      function Particle() { this.position = new Point(); this.velocity = new Point(); this.acceleration = new Point(); this.age = 0; }
+      Particle.prototype.initialize = function(x, y, dx, dy) { this.position.x = x; this.position.y = y; this.velocity.x = dx; this.velocity.y = dy; this.acceleration.x = dx * settings.particles.effect; this.acceleration.y = dy * settings.particles.effect; this.age = 0; };
+      Particle.prototype.update = function(deltaTime) { this.position.x += this.velocity.x * deltaTime; this.position.y += this.velocity.y * deltaTime; this.velocity.x += this.acceleration.x * deltaTime; this.velocity.y += this.acceleration.y * deltaTime; this.age += deltaTime; };
+      Particle.prototype.draw = function(context, image) { function ease(t) { return (--t) * t * t + 1; } var size = image.width * ease(this.age / settings.particles.duration); context.globalAlpha = 1 - this.age / settings.particles.duration; context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size); };
+      return Particle;
+    })();
+    var ParticlePool = (function() {
+      var particles, firstActive = 0, firstFree = 0, duration = settings.particles.duration;
+      function ParticlePool(length) { particles = new Array(length); for (var i = 0; i < particles.length; i++) particles[i] = new Particle(); }
+      ParticlePool.prototype.add = function(x, y, dx, dy) { particles[firstFree].initialize(x, y, dx, dy); firstFree++; if (firstFree == particles.length) firstFree = 0; if (firstActive == firstFree) firstActive++; if (firstActive == particles.length) firstActive = 0; };
+      ParticlePool.prototype.update = function(deltaTime) { var i; if (firstActive < firstFree) { for (i = firstActive; i < firstFree; i++) particles[i].update(deltaTime); } if (firstFree < firstActive) { for (i = firstActive; i < particles.length; i++) particles[i].update(deltaTime); for (i = 0; i < firstFree; i++) particles[i].update(deltaTime); } while (particles[firstActive].age >= duration && firstActive != firstFree) { firstActive++; if (firstActive == particles.length) firstActive = 0; } };
+      ParticlePool.prototype.draw = function(context, image) { if (firstActive < firstFree) { for (i = firstActive; i < firstFree; i++) particles[i].draw(context, image); } if (firstFree < firstActive) { for (i = firstActive; i < particles.length; i++) particles[i].draw(context, image); for (i = 0; i < firstFree; i++) particles[i].draw(context, image); } };
+      return ParticlePool;
+    })();
+    (function(canvas) {
+      var context = canvas.getContext('2d'), particles = new ParticlePool(settings.particles.length), particleRate = settings.particles.length / settings.particles.duration, time;
+      function pointOnHeart(t) { return new Point( 160 * Math.pow(Math.sin(t), 3), 130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25 ); }
+      var image = (function() {
+        var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
+        canvas.width = settings.particles.size; canvas.height = settings.particles.size;
+        function to(t) { var point = pointOnHeart(t); point.x = settings.particles.size / 2 + point.x * settings.particles.size / 350; point.y = settings.particles.size / 2 - point.y * settings.particles.size / 350; return point; }
+        context.beginPath(); var t = -Math.PI; var point = to(t); context.moveTo(point.x, point.y); while (t < Math.PI) { t += 0.01; point = to(t); context.lineTo(point.x, point.y); } context.closePath(); 
+        context.fillStyle = '#3498db'; 
+        context.fill();
+        var image = new Image(); image.src = canvas.toDataURL(); return image;
+      })();
+      function render() {
+        requestAnimationFrame(render);
+        var newTime = new Date().getTime() / 1000, deltaTime = newTime - (time || newTime); time = newTime;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        var amount = particleRate * deltaTime;
+        for (var i = 0; i < amount; i++) {
+          var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+          var dir = pos.clone().length(settings.particles.velocity);
+          particles.add(canvas.width / 2 + pos.x, canvas.height / 2 - pos.y, dir.x, -dir.y);
+        }
+        particles.update(deltaTime); particles.draw(context, image);
+      }
+      function onResize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+      window.onresize = onResize;
+      setTimeout(function() { onResize(); render(); }, 10);
+    })(document.getElementById('pinkboard'));
+
+    // --- JS ZOOM ẢNH ---
+    function zoomImg(src) {
+      const modal = document.getElementById('imgModal');
+      const target = document.getElementById('zoomTarget');
+      target.src = src;
+      modal.classList.add('show');
+    }
+    function closeZoom() {
+      document.getElementById('imgModal').classList.remove('show');
+    }
+  </script>
+</BODY>
+</HTML>
