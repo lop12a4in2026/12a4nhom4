@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bức Tường Kỷ Niệm Tương Tác</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #333;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+
+        /* NÚT QUAY LẠI TRANG CHỦ (THÊM MỚI) */
+        .btn-back-home {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 9999;
+            background: #e67e22;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Form nhập liệu */
+        .input-section {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input, select, textarea, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 60px;
+            resize: none;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Bức tường */
+        .wall {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* Sticky Note */
+        .sticky-note {
+            width: 220px;
+            min-height: 220px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sticky-note:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 10;
+        }
+
+        .sticky-note h3 {
+            margin: 0 0 10px 0;
+            font-size: 1em;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .sticky-note p {
+            font-style: italic;
+            font-size: 0.95em;
+            flex-grow: 1;
+            word-wrap: break-word;
+        }
+
+        .sticky-note .footer {
+            text-align: right;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Màu sắc */
+        .note-sorry { background-color: #ffcccc; }
+        .note-thanks { background-color: #ccffcc; }
+        .note-future { background-color: #ffffcc; }
+
+        /* Ghim giấy */
+        .sticky-note::before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-back-home">🏠 Về Trang Chủ</a>
+
+<div class="container">
+    <h1>📌 Bức Tường "Chưa Kịp Nói" 📌</h1>
+
+    <div class="input-section">
+        <select id="noteType">
+            <option value="note-sorry">🙏 Lời xin lỗi</option>
+            <option value="note-thanks">❤️ Lời cảm ơn</option>
+            <option value="note-future">🚀 Gửi tương lai</option>
+        </select>
+        <input type="text" id="noteAuthor" placeholder="Tên của bạn (hoặc ẩn danh)..." style="flex: 1;">
+        <textarea id="noteContent" placeholder="Viết lời nhắn của bạn ở đây..."></textarea>
+        <button onclick="addNote()">✨ Dán lên tường</button>
+    </div>
+
+    <div class="wall" id="wall">
+        <div class="sticky-note note-thanks" style="transform: rotate(2deg);">
+            <h3>❤️ Lời cảm ơn</h3>
+            <p>Cảm ơn vì đã luôn ở bên!</p>
+            <div class="footer">#Admin</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addNote() {
+        const type = document.getElementById('noteType').value;
+        const author = document.getElementById('noteAuthor').value || "Ẩn danh";
+        const content = document.getElementById('noteContent').value;
+        const typeText = document.querySelector(`#noteType option[value="${type}"]`).text;
+
+        if (content.trim() === "") {
+            alert("Vui lòng nhập nội dung lời nhắn!");
+            return;
+        }
+
+        // Tạo thẻ div cho note mới
+        const newNote = document.createElement('div');
+        newNote.className = `sticky-note ${type}`;
+        
+        // Tạo độ nghiêng ngẫu nhiên để trông tự nhiên
+        const randomRotate = Math.floor(Math.random() * 10) - 5; 
+        newNote.style.transform = `rotate(${randomRotate}deg)`;
+
+        newNote.innerHTML = `
+            <h3>${typeText}</h3>
+            <p>"${content}"</p>
+            <div class="footer">#${author}</div>
+        `;
+
+        // Thêm vào bức tường
+        document.getElementById('wall').appendChild(newNote);
+
+        // Xóa nội dung sau khi gửi
+        document.getElementById('noteContent').value = "";
+        document.getElementById('noteAuthor').value = "";
+    }
+</script>
+
+</body>
+</html>
